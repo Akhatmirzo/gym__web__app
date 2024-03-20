@@ -4,14 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function SignUp() {
+export default function SignUp({url}) {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
 
-  const ApiUrl = "http://localhost:8000/api/register";
+  const ApiUrl = `${url}api/register`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +29,7 @@ export default function SignUp() {
         navigate("/dashboard");
       }
     } catch (error) {
+      console.log(error);
       toast.error(error.response.data.error);
     }
   };

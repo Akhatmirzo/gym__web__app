@@ -4,14 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function SignIn() {
+export default function SignIn({url}) {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
 
-  const ApiUrl = "http://localhost:8000/api/login";
+  const ApiUrl = `${url}api/login`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

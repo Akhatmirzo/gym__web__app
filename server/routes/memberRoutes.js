@@ -73,7 +73,7 @@ function MemberRoutes(fastify, options, done) {
 
   //* Get one Member
   fastify.get("/:id", {
-    preHandler: [auth(["admin", "Member"])],
+    preHandler: [auth(["admin"])],
     schema: {
       tags: ["Member"],
     },
@@ -91,7 +91,7 @@ function MemberRoutes(fastify, options, done) {
 
   //* Update Member's fullname vs phone number
   fastify.put("/:id", {
-    preHandler: [auth(["admin", "Member"])],
+    preHandler: [auth(["admin"])],
     schema: {
       tags: ["Member"],
     },

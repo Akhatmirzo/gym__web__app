@@ -5,11 +5,11 @@ import MemberModal from "../../Components/Modal/MemberModal";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function Dashboard({ setLoading }) {
+export default function Dashboard({ setLoading, url }) {
   const [showModal, setShowModal] = useState(false);
   const [members, setMembers] = useState([]);
   const token = localStorage.getItem("token");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token || token === undefined) {
@@ -21,15 +21,11 @@ export default function Dashboard({ setLoading }) {
   //Create Member
   const createMember = async (member) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/member",
-        member,
-        {
-          headers: {
-            authorization: token,
-          },
-        }
-      );
+      const response = await axios.post(`${url}api/member`, member, {
+        headers: {
+          authorization: token,
+        },
+      });
 
       if (response.status !== 201) {
         throw new Error(response.statusText);
@@ -47,7 +43,7 @@ export default function Dashboard({ setLoading }) {
   const getAllMembers = async () => {
     if (!showModal) setLoading(true);
     try {
-      const responce = await axios.get("http://localhost:8000/api/member", {
+      const responce = await axios.get(`${url}api/member`, {
         headers: {
           authorization: token,
         },
@@ -57,7 +53,7 @@ export default function Dashboard({ setLoading }) {
         throw new Error(responce.statusText);
       }
 
-      setMembers(responce.data.Members);
+      setMembers(responce.data.Members || []);
       setLoading(false);
     } catch (error) {
       console.log(error);

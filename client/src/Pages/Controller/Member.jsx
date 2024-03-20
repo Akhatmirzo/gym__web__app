@@ -3,14 +3,19 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import MemberShipModal from "../../Components/Modal/MemberShipModal";
+import EditMemberModal from "../../Components/Modal/EditMemberModal";
 import LoadingMagnify from "../../Components/Loadings/LoadingMagnify";
 import { toast } from "react-toastify";
 
-export default function Member({ setLoading }) {
+export default function Member({ setLoading, url }) {
   const [member, setMember] = useState({});
   const [memberShip, setMemberShip] = useState([]);
+
   const [showModal, setShowModal] = useState(false);
+  const [EditMemberPopUp, setEditMemberPopUp] = useState(false);
+
   const [spin, setSpin] = useState(false);
+
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const params = useParams();
@@ -27,7 +32,7 @@ export default function Member({ setLoading }) {
     if (!showModal) setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/member/${params.id}`,
+        `${url}api/member/${params.id}`,
         {
           headers: {
             authorization: token,
@@ -50,7 +55,7 @@ export default function Member({ setLoading }) {
   const addMemberShip = async (data) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/membership`,
+        `${url}api/membership`,
         data,
         {
           headers: {
@@ -73,9 +78,10 @@ export default function Member({ setLoading }) {
   const getAllMemberShips = async () => {
     setSpin(true);
     try {
-      const response = await axios.get(`http://localhost:8000/api/membership`, {
+      const response = await axios.get(`${url}api/membership`, {
         headers: {
           member_id: params.id,
+          authorization: token
         },
       });
 
@@ -94,7 +100,7 @@ export default function Member({ setLoading }) {
   const deleteMember = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/member/${params.id}`,
+        `${url}api/member/${params.id}`,
         {
           headers: {
             authorization: token,
@@ -111,6 +117,31 @@ export default function Member({ setLoading }) {
     } catch (e) {
       toast.error(e.response.data.error);
       console.log(e);
+    }
+  };
+
+  // Update a member
+  const updateMember = async (data) => {
+    try {
+      const response = await axios.put(
+        `${url}api/member/${params.id}`,
+        data,
+        {
+          headers: {
+            authorization: token,
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.statusText);
+      }
+
+      console.log(response);
+      toast.success(response.data.message);
+    } catch (err) {
+      toast.error(err.response.data.error);
+      console.log(err);
     }
   };
 
@@ -156,7 +187,7 @@ export default function Member({ setLoading }) {
             >
               Delete
             </button>
-            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+            <button onClick={() => setEditMemberPopUp(true)}  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
               Edit
             </button>
           </div>
@@ -220,6 +251,13 @@ export default function Member({ setLoading }) {
         setShowModal={setShowModal}
         data={member}
         addMemberShip={addMemberShip}
+      />
+
+      <EditMemberModal
+        EditMemberPopUp={EditMemberPopUp}
+        setEditMemberPopUp={setEditMemberPopUp}
+        updateMember={updateMember}
+        member={member}
       />
     </>
   );
